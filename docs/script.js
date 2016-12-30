@@ -96,7 +96,7 @@ var MakeCylinder =function(src, width, height){
 				}
 			}
 			if(sum>((imxx-imnx)*(imxy-imny))/2){
-				form.ta.value+="0";
+				form.ta.value+="1";
 				DrawCircle(px,py,dia/2,GetColor(255,0,0),1);
 			}
 			else{
