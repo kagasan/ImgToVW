@@ -1,0 +1,40 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>ImgToVW</title>
+<script src="script.js"></script>
+</head>
+<body>
+<h1>ImgToVW</h1>
+画像からバーサライタ用の点灯パターンを計算します．
+<hr>
+<b>使い方</b><br>
+パラメータを適当に設定してから画像ファイルを読み込む．<br>
+<hr>
+<b>ファイル選択</b><br>
+<input type="file" id="selectfile" accept='image/*'><br>
+<hr>
+<form name='fm'>
+<b>設定</b><br>
+LED直径<input name="dia" type='text' value='3'/><br>
+1周分割数<input name="sp" type='text' value='180'/><br>
+LED配置数<input name="num" type='text' value='16'/><br>
+LED間隔(LED中心間距離)<input name="dis" type='text' value='3'/><br>
+中心と最初のLED間隔(LED中心間距離)<input name="pad" type='text' value='10'/><br>
+出力画像拡大率<input name="rate" type='text' value='5'/><br>
+オフLEDの扱い(塗りつぶしなし円)<input name="off" type='checkbox'/><br>
+<hr>
+<b>出力</b><br>
+<textarea name='para'  rows="5" cols="40">
+ここにいくつかのパラメータが生まれる
+</textarea><br>
+<textarea name='ta'  rows="5" cols="40">
+ここに点灯パターンが生まれるハズ
+</textarea><br>
+</form>
+<a id="download" href="#" download="download.stl" onclick="DL()">ダウンロード</a><br>
+<canvas id="outcanvas"></canvas><br>
+<div id="output"></div><br>
+<canvas id="canvas"></canvas><br>
+</body>
+</html>
