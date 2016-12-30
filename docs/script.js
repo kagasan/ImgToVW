@@ -107,6 +107,13 @@ var MakeCylinder =function(src, width, height){
 		form.ta.value+="\n";
 	}
 	//ここまで計算
+	
+	//ここから画像変換
+	var png = canvas.toDataURL();
+	document.getElementById("Img").src=png;
+	canvas.width = 0;
+	canvas.height = 0;
+	//ここまで画像変換
 }
 
 window.addEventListener("DOMContentLoaded", function(){
