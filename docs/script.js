@@ -8,6 +8,7 @@ var MakeCylinder =function(src, width, height){
 	var pad = parseFloat(form.pad.value);//中心と最初のLED間隔(LED中心間距離)
 	var rate = parseFloat(form.rate.value);//拡大率
 	var off = form.off.checked;//オフLEDの扱い
+	var dyna = form.dyna.checked;//オフLEDの扱い
 	dia*=rate;
 	dis*=rate;
 	pad*=rate;
@@ -71,6 +72,7 @@ var MakeCylinder =function(src, width, height){
 	form.ta.value="";
 	for(var i=0;i<sp;i++){
 		for(var j=0;j<num;j++){
+			if(dyna&&(j+i)%2)continue;
 			var rad = pad + j * dis;
 			var px = cx + rad * Math.cos(angle*i);
 			var py = cy + rad * Math.sin(angle*i);
