@@ -1,164 +1,115 @@
-var MakeCylinder =function(src, width, height){
-	//ここから入力パラメータ
-	var form = document.forms.fm;
-	var dia = parseFloat(form.dia.value);//LED直径
-	var sp = parseFloat(form.sp.value);//1周分割数
-	var num = parseFloat(form.num.value);//LED配置数
-	var dis = parseFloat(form.dis.value);//LED間隔(LED中心間距離)
-	var pad = parseFloat(form.pad.value);//中心と最初のLED間隔(LED中心間距離)
-	var rate = parseFloat(form.rate.value);//拡大率
-	var off = form.off.checked;//オフLEDの扱い
-	var dyna = form.dyna.checked;//オフLEDの扱い
-	dia*=rate;
-	dis*=rate;
-	pad*=rate;
-	//ここまで入力パラメータ
+var Img = new Image();
+var img = [];
+//画像入力
+window.onload = function(){
+	document.getElementById("selectfile").addEventListener("change", 
+		function(evt){
+			var file = evt.target.files;
+			var reader = new FileReader();
+			reader.readAsDataURL(file[0]);
+			reader.onload = function(){
+				Img.src = reader.result;
+				document.getElementById("OutputImage").innerHTML = "<img src='" + Img.src + "'></br>";
+			}
+		},
+	false);
 	
-	//ここから出力用canvas設定
-	var canvas = document.getElementById('outcanvas');
-	canvas.width = parseInt(2*(pad+dis*(num-1)+dia/2));
-	canvas.height = parseInt(2*(pad+dis*(num-1)+dia/2));
+};
+
+//サンプル画像作成
+function MakeSample(){
+	var canvas = document.createElement("canvas");
 	var ctx = canvas.getContext('2d');
-	function GetColor(R,G,B){
-		return "rgb("+R+","+G+","+B+")";
-	}
-	function DrawBox(X1,Y1,X2,Y2,Color,FillFlg){
-		if(FillFlg){
-			ctx.fillStyle = Color;
-			ctx.fillRect(X1,Y1,X2-X1,Y2-Y1);
-		}
-		else{
-			ctx.strokeStyle = Color;
-			ctx.strokeRect(X1,Y1,X2-X1,Y2-Y1);
-		}
-	}
-	function DrawLine(X1,Y1,X2,Y2,Color){
-		ctx.strokeStyle=Color;
-		ctx.beginPath();
-		ctx.moveTo(X1, Y1);
-		ctx.lineTo(X2, Y2);
-		ctx.stroke();
-	}
-	function DrawCircle(X,Y,R,Color,FillFlag){
-		if(FillFlag){
-			ctx.fillStyle = Color;
-			ctx.beginPath();
-			ctx.arc(X, Y, R, 0, Math.PI*2, true);
-			ctx.fill();
-		}
-		else{
-			ctx.strokeStyle=Color;
-			ctx.beginPath();
-			ctx.arc(X, Y, R, 0, Math.PI*2, false);
-			ctx.stroke();
-		}
-	}
-	//ここまで出力用canvas設定
-	
-	//ここから事前計算
-	var angle = Math.PI*2/sp;
-	var cx = canvas.width / 2;
-	var cy = canvas.height / 2;
-	//ここまで事前計算
-	
-	//ここからパラメータ出力
-	form.para.value="何を\n";
-	form.para.value+="表示したら\n";
-	form.para.value+="ええんや？\n";
-	//ここまでパラメータ出力
-	
-	//ここから計算
-	DrawBox(0,0,canvas.width,canvas.height,GetColor(0,0,0),1);
-	form.ta.value="";
-	for(var i=0;i<sp;i++){
-		for(var j=0;j<num;j++){
-			if(dyna&&(j+i)%2)continue;
-			var rad = pad + j * dis;
-			var px = cx + rad * Math.cos(angle*i);
-			var py = cy + rad * Math.sin(angle*i);
-			var mnx = px - dia/2;
-			var mny = py - dia/2;
-			var mxx = px + dia/2;
-			var mxy = py + dia/2;
-			
-			var imnx = mnx /canvas.width *width;
-			var imny = mny /canvas.height *height;
-			var imxx = mxx /canvas.width *width;
-			var imxy = mxy /canvas.height *height;
-			var sum = 0;
-			for(var y = parseInt(imny);y<imxy;y++){
-				if(y<0 || y>=height)continue;
-				for(var x = parseInt(imnx);x<imxx;x++){
-					if(x<0 || x>=width)continue;
-					var idx = (x+y*width)*4;
-					var gray = (src[idx]+src[idx+1]+src[idx+2])/3;
-					if(gray < 128){
-						sum++;
-					}
-				}
-			}
-			if(sum>((imxx-imnx)*(imxy-imny))/2){
-				form.ta.value+="1";
-				DrawCircle(px,py,dia/2,GetColor(255,0,0),1);
-			}
-			else{
-				form.ta.value+="0";
-				if(off)DrawCircle(px,py,dia/2,GetColor(255,0,0),0);
-			}
-		}
-		form.ta.value+="\n";
-	}
-	//ここまで計算
-	
-	//ここから画像変換
-	var png = canvas.toDataURL();
-	document.getElementById("Img").src=png;
-	canvas.width = 0;
-	canvas.height = 0;
-	//ここまで画像変換
+	canvas.width = 384;
+	canvas.height = 384;
+	ctx.fillStyle = "rgb(255, 255, 255)";
+	ctx.fillRect(0, 0, 400, 400);
+	ctx.font = "400px 'メイリオ'";
+	ctx.fillStyle = "rgb(255, 0, 0)";
+	ctx.fillText(document.forms.fm0.SampleChara.value,0,350);
+	Img.src = canvas.toDataURL();
+	document.getElementById("OutputImage").innerHTML = "<img src='" + Img.src + "'></br>";
 }
 
-window.addEventListener("DOMContentLoaded", function(){
-	var ofd = document.getElementById("selectfile");
-	ofd.addEventListener("change", function(evt) {
-		var img = null;
-		var canvas = document.createElement("canvas");
-		var file = evt.target.files;
-		var reader = new FileReader();
-		reader.readAsDataURL(file[0]);
-		reader.onload = function(){
-			img = new Image();
-			img.onload = function(){
-				var context = canvas.getContext('2d');
-				var width = img.width;
-				var height = img.height;
-				canvas.width = width;
-				canvas.height = height;
-				context.drawImage(img, 0, 0);
-				var srcData = context.getImageData(0, 0, width, height);
-				var src = srcData.data;
-				MakeCylinder(src, width, height);
-				//ImageProcessing(src, width, height);
-				context.putImageData(srcData, 0, 0);
-				var dataurl = canvas.toDataURL();
-				document.getElementById("output").innerHTML = "<img src='" + dataurl + "'>";
-			}
-			img.src = reader.result;
+//画像縮小
+function Small(WLimit=384, HLimit=384){
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+	var w = Img.width;
+	var h = Img.height;
+	if(Img.width>WLimit || Img.height>HLimit){
+		w = WLimit;
+		h = parseInt(Img.height * WLimit / Img.width);
+		if(Img.width <= Img.height){
+			w = parseInt(Img.width * HLimit / Img.height);
+			h = HLimit;
 		}
-	}, false);
-});
+	}
+	canvas.width = WLimit;
+	canvas.height = HLimit;
+	ctx.drawImage(Img, 0, 0, canvas.width, canvas.height);
+	Img.src = canvas.toDataURL();
+}
 
-//フォームの内容をダウンロードする
-function DL(){
-	var form = document.forms.fm;
-	var content = form.ta.value;
-	var blob = new Blob([ content ], { "type" : "text/plain" });
-	if(window.navigator.msSaveBlob){
-		window.navigator.msSaveBlob(blob, "test.txt"); 
-		//msSaveOrOpenBlobの場合はファイルを保存せずに開ける
-		window.navigator.msSaveOrOpenBlob(blob, "test.txt"); 
+//2値データ作成
+function MakeBin(){
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+	canvas.width = Img.width;
+	canvas.height = Img.height;
+	ctx.drawImage(Img,0,0);
+	var Data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var data = Data.data;
+	img=[];
+	for(var i=0;i<data.length;i+=4){
+		if((data[i]+data[i+1]+data[i+2])/3>128)img.push(1);
+		else img.push(0);
 	}
-	else{
-		document.getElementById("download").href = window.URL.createObjectURL(blob);
+}
+
+function Action(){
+	Small();
+	MakeBin();
+	var form1 = document.forms.fm1;
+	var P_NUM = parseInt(form1.P_NUM.value);
+	var form2 = document.forms.fm2;
+	form2.ta.value="";
+	
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+	canvas.width = 384;
+	canvas.height = 384;
+	ctx.fillStyle = "rgb(0, 0, 0)";
+	ctx.fillRect(0, 0, 400, 400);
+	
+	for(var i=0; i<P_NUM;i++){
+		var st = Math.PI * 2 * i / P_NUM;
+		form2.ta.value+="0b";
+		for(var j=0;j<12;j++){
+			var cnt = 0;
+			var sum = 0;
+			var en = Math.PI * 2 * (i+1) / P_NUM;
+			for(var rad = st; rad < en; rad += 0.01){
+				var x = parseInt(Math.cos(rad) * 16 * j + 192);
+				var y = parseInt(Math.sin(rad) * 16 * j + 192);
+				if(img[y*384+x]==0)sum++;
+				cnt++;
+			}
+			if(sum*2<cnt){
+				form2.ta.value+="0";
+				continue;
+			}
+			form2.ta.value+="1";
+			for(var rad = st; rad < en; rad += 0.01){
+				var x = parseInt(Math.cos(rad) * 16 * j + 192);
+				var y = parseInt(Math.sin(rad) * 16 * j + 192);
+				ctx.fillStyle = "rgb(255,0,0)";
+				ctx.beginPath();
+				ctx.arc(x, y, 3, 0, Math.PI*2, true);
+				ctx.fill();
+			}
+		}
+		form2.ta.value+=",\n";
 	}
+	document.getElementById("OutputImage").innerHTML = "<img src='" + canvas.toDataURL() + "'></br>";
 }
